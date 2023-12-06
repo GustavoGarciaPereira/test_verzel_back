@@ -11,7 +11,7 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # Copie o conteúdo do diretório local para o diretório de trabalho no container
-COPY . /code/app
+COPY ./app /code/app
 
 # Comando para rodar a aplicação
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
