@@ -168,8 +168,15 @@ def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+# @app.get("/cars/", response_model=List[schemas.Car])
+# def read_cars(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+#     # A linha acima garante que o usuário esteja autenticado
+#     # Você pode usar 'current_user' para acessar os dados do usuário atual, se necessário
+
+#     cars = crud.get_cars(db, skip=skip, limit=limit)
+#     return cars
 @app.get("/cars/", response_model=List[schemas.Car])
-def read_cars(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
+def read_cars(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     # A linha acima garante que o usuário esteja autenticado
     # Você pode usar 'current_user' para acessar os dados do usuário atual, se necessário
 

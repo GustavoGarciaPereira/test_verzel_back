@@ -48,6 +48,7 @@ class UserUpdate(UserBase):
 class User(UserBase):
     id: int
     cars: List[Car] = []
+    hashed_password: str
 
     class Config:
         orm_mode = True
