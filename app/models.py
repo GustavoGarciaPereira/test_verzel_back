@@ -8,22 +8,24 @@ Base = declarative_base()
 
 
 class Car(Base):
-    __tablename__ = "cars"
-
+    __tablename__ = 'cars'
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True)
     marca = Column(String, index=True)
     modelo = Column(String, index=True)
     price = Column(Float)
     url_imagem = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))  # Chave estrangeira para associar o carro ao usuário
 
+    # Relação com o modelo User
+    user = relationship("User", back_populates="cars")
 
 class User(Base):
-    __tablename__ = "users"
-
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    username = Column(String,unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    car_id = Column(Integer, ForeignKey('cars.id'))
-
-    car = relationship("Car")
+    hashed_password = Column(String)
+    # Relação com o modelo Car
+    cars = relationship("Car", order_by=Car.id, back_populates="user")

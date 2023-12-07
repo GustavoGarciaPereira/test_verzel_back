@@ -13,6 +13,11 @@ def get_cars(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_car(db: Session, car: schemas.CarCreate):
+    # Verificar se o usuário existe
+    user = db.query(models.User).filter(models.User.id == car.user_id).first()
+    if not user:
+        raise ValueError("User ID not found")
+
     db_car = models.Car(**car.dict())
     db.add(db_car)
     db.commit()
@@ -39,6 +44,15 @@ def delete_car(db: Session, car_id: int):
     return db_car
 
 
+
+from passlib.context import CryptContext
+
+# Contexto para lidar com hashes de senha
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
 #================================================================
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
@@ -49,12 +63,17 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(**user.dict())
+    hashed_password = get_password_hash(user.password)
+    
+    print(user)
+    db_user = models.User(
+        username=user.username, hashed_password=hashed_password, name=user.name, email=user.email
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    print(f'\n\n\n{hashed_password}\n\n\n')
     return db_user
-
 
 def update_user(db: Session, user_id: int, user: schemas.UserUpdate):
     db_user = get_user(db, user_id)

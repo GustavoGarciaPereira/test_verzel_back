@@ -1,5 +1,5 @@
 # Use uma imagem oficial do Python como imagem de base
-FROM python:3.9
+FROM python:3.10
 
 # Defina o diretório de trabalho dentro do container
 WORKDIR /code
