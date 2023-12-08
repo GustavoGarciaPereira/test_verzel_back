@@ -64,8 +64,6 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
-    
-    print(user)
     db_user = models.User(
         username=user.username, hashed_password=hashed_password, name=user.name, email=user.email
     )
