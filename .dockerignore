@@ -1,0 +1,10 @@
+# flyctl launch added from .gitignore
+**/__pycache__/main.cpython-38.pyc
+**/.vscode/settings.json
+**/app/.vscode/settings.json
+**/.vscode/launch.json
+
+# flyctl launch added from venv/.gitignore
+# created by virtualenv automatically
+venv/**/*
+fly.toml

@@ -18,11 +18,19 @@ from sqlalchemy.orm import relationship
 
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://user:password@db:5432/mydatabase"
-# Altere a URL acima para a configuração do seu banco de dados
+# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@db:5432/mydatabase"
+# # Altere a URL acima para a configuração do seu banco de dados
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///mydatabase.db" 
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+
 
 app = FastAPI()
 
