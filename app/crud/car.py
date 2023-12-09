@@ -7,7 +7,9 @@ def get_car(db: Session, car_id: int):
 
 
 def get_cars(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Car).offset(skip).limit(limit).all()
+    return db.query(
+        models.Car
+        ).offset(skip).limit(limit).all().order_by(models.Car.price.desc())
 
 
 def create_car(db: Session, car: schemas.CarCreate):

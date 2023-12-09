@@ -1,8 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+from typing import List, Optional
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
 from app import schemas
 from app import crud
 from app.dependencies import get_db
 from app.models import User
+
+from app.config import settings
 
 # Rotas relacionadas a Car
 router = APIRouter()
@@ -16,18 +24,15 @@ router = APIRouter()
 #     db.commit()
 #     return {"message": "Database populated with car data"}
 
-
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-from typing import List, Optional
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
 # Configurações do JWT (substitua com suas próprias chaves)
-SECRET_KEY = "12b47320393cafd269a011a4c1cf29949b865e859512fbb0461db71e31b67399"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# SECRET_KEY = "12b47320393cafd269a011a4c1cf29949b865e859512fbb0461db71e31b67399"
+# ALGORITHM = "HS256"
+# ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+SECRET_KEY = settings.database_url
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -85,7 +90,8 @@ async def get_current_user(
 
 @router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -98,15 +104,20 @@ async def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer", "user_id": user.id}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": user.id
+    }
 
 
 @router.get("/usersAlt/me", response_model=schemas.User)
-async def read_users_me(current_user: schemas.User = Depends(get_current_user)):
+async def read_users_me(
+        current_user: schemas.User = Depends(get_current_user)
+        ):
     return current_user
 
 
-# ===================================================================
 @router.post("/cars/", response_model=schemas.Car)
 def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
     print("car: ", car)
@@ -116,18 +127,11 @@ def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# @router.get("/cars/", response_model=List[schemas.Car])
-# def read_cars(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-#     # A linha acima garante que o usuário esteja autenticado
-#     # Você pode usar 'current_user' para acessar os dados do usuário atual, se necessário
-
-
-#     cars = crud.get_cars(db, skip=skip, limit=limit)
-#     return cars
 @router.get("/cars/", response_model=List[schemas.Car])
 def read_cars(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     # A linha acima garante que o usuário esteja autenticado
-    # Você pode usar 'current_user' para acessar os dados do usuário atual, se necessário
+    # Você pode usar 'current_user'
+    # para acessar os dados do usuário atual, se necessário
 
     cars = crud.get_cars(db, skip=skip, limit=limit)
     return cars
@@ -142,7 +146,11 @@ def read_car(car_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/cars/{car_id}", response_model=schemas.Car)
-def update_car(car_id: int, car: schemas.CarUpdate, db: Session = Depends(get_db)):
+def update_car(
+        car_id: int,
+        car: schemas.CarUpdate,
+        db: Session = Depends(get_db)
+        ):
     db_car = crud.update_car(db, car_id, car)
     if db_car is None:
         raise HTTPException(status_code=404, detail="Car not found")
@@ -155,6 +163,3 @@ def delete_car(car_id: int, db: Session = Depends(get_db)):
     if db_car is None:
         raise HTTPException(status_code=404, detail="Car not found")
     return db_car
-
-
-# =================================================================================================
