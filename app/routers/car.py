@@ -16,19 +16,6 @@ from app.config import settings
 router = APIRouter()
 
 
-# @router.get("/populate-db")
-# def populate_db(db: Session = Depends(get_db)):
-#     for car_data in carros_data:
-#         car = Car(**car_data)
-#         db.add(car)
-#     db.commit()
-#     return {"message": "Database populated with car data"}
-
-# Configurações do JWT (substitua com suas próprias chaves)
-# SECRET_KEY = "12b47320393cafd269a011a4c1cf29949b865e859512fbb0461db71e31b67399"
-# ALGORITHM = "HS256"
-# ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
 SECRET_KEY = settings.database_url
 ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
