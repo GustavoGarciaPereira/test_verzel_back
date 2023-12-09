@@ -109,8 +109,9 @@ async def read_users_me(current_user: schemas.User = Depends(get_current_user)):
 # ===================================================================
 @router.post("/cars/", response_model=schemas.Car)
 def create_car(car: schemas.CarCreate, db: Session = Depends(get_db)):
+    print("car: ", car)
     try:
-        return create_car(db=db, car=car)
+        return crud.create_car(db=db, car=car)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
